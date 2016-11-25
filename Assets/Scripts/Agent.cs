@@ -3,15 +3,16 @@ using System.Collections;
 
 public class Agent : MonoBehaviour
 {
-    private Vector2 _direction;
-    private float _speed;
-    private int _playerNumber;
+    protected Vector2 _direction;
+    protected float _speed;
+    protected int _playerNumber;
 
     public enum role
     {
         Killer,
         Sherif,
         Innocent,
+        None,
     }
 
     private role _role;
