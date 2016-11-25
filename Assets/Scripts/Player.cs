@@ -60,14 +60,14 @@ public class Player : Agent
         {
             if(Input.GetButton("Fire_" + _playerNumber) && !_hasFire)
             {
-                Debug.Log("Tire");
                 // tire
+                _hasFire = true;
                 RaycastHit2D hit = Physics2D.Raycast(transform.position + new Vector3(_direction.x, _direction.y), _direction, _distanceFire);
                 if (hit.collider != null)
                 {
                     if(hit.collider.gameObject.GetComponent<Player>())
                     {
-                        hit.collider.gameObject.GetComponent<Player>().TakeDamage(_role);
+                        hit.collider.gameObject.GetComponent<Player>().TakeDamage(_role, _playerNumber);
                         // ajouter le check
                     }
                     else if (hit.collider.gameObject.GetComponent<IA>())
@@ -89,20 +89,23 @@ public class Player : Agent
         }
     }
 
-    void TakeDamage(role senderRole)
+    void TakeDamage(role senderRole, int idSender)
     {
         _isAlive = false;
         GetComponent<SpriteRenderer>().sprite = deadTexture;
+        _gm.SetDeath(_playerNumber);
         if(_role == role.Innocent)
         {
             if(senderRole == role.Killer)
             {
                 // killer marque un point
-
+                _gm.Score(idSender, 1);
             }
             else if (senderRole == role.Sherif)
             {
                 // sherif perd
+                _gm.Score(idSender, -1);
+                _gm.Reset();
             }
         }
         else if (_role == role.Sherif)
@@ -110,7 +113,7 @@ public class Player : Agent
             if (senderRole == role.Killer)
             {
                 // killer marque un point
-
+                _gm.Score(idSender, 1);
             }
         }
         else if (_role == role.Killer)
@@ -118,7 +121,8 @@ public class Player : Agent
             if (senderRole == role.Sherif)
             {
                 // sherif marque un point
-
+                _gm.Score(idSender, 1);
+                _gm.Reset();
             }
         }
     }

@@ -7,11 +7,6 @@ public class IA : Agent
 
     Vector2 _limits;
 
-    public IA(Vector2 direction, float speed, int playerNumber, role theRole) : base(direction, speed, playerNumber, theRole)
-    {
-        
-    }
-
     void Awake()
     {
         _speed = 5f;
