@@ -3,9 +3,10 @@ using System.Collections;
 
 public class Agent : MonoBehaviour
 {
-    private Vector2 _direction;
-    private float _speed;
-    private int _playerNumber;
+    protected Vector2 _direction;
+    protected float _speed = 5.0f;
+    public int _playerNumber = 0;
+    protected bool _isAlive = true;
 
     public enum role
     {
@@ -14,13 +15,21 @@ public class Agent : MonoBehaviour
         Innocent,
     }
 
-    private role _role;
+    protected role _role;
 
-    public Agent(Vector2 direction, float speed, int playerNumber, role theRole)
+    public Sprite deadTexture;
+
+    public void Init(Vector2 direction, float speed, int playerNumber, role theRole)
     {
         _direction = direction;
         _speed = speed;
         _playerNumber = playerNumber;
         _role = theRole;
+        _isAlive = true;
+    }
+
+    public virtual void InitRole()
+    {
+
     }
 }
