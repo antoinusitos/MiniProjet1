@@ -13,6 +13,7 @@ public class Agent : MonoBehaviour
         Killer,
         Sherif,
         Innocent,
+        None,
     }
 
     protected role _role;
