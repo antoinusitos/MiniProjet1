@@ -5,12 +5,6 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
-    /////
-    /////
-    // TODO ajouter la gestion du reset, du score et du temps
-    /////
-    /////
-
     List<IA> mobs;
 
     public int nbMobs;
@@ -38,19 +32,62 @@ public class GameManager : MonoBehaviour
     public Sprite dead;
 
     List<GameObject> IAs;
-    List<GameObject> players;
+    List<Player> players;
+
+    private float _timeToEnd;
+    private float _timeToShow;
+    public GameObject timer;
+    private bool _hasShown;
+
+    public int scoreMax = 10;
 
     void Start()
     {
         SpawnEveryThing();
     }
 
+    void Update()
+    {
+        _timeToEnd -= Time.deltaTime;
+        float toShow = Mathf.Round(_timeToEnd);
+        timer.GetComponent<Text>().text = toShow.ToString();
+
+        if(_timeToEnd <= _timeToShow && !_hasShown)
+        {
+            _hasShown = true;
+            foreach (Player go in players)
+            {
+                if (go.IsAlive())
+                {
+                    go.ShowPlayer();
+                }
+            }
+       }
+
+        if(toShow == 0.0f)
+        {
+            foreach (Player go in players)
+            {
+                if(go.GetRole() == Agent.role.Innocent)
+                {
+                    Score(go._playerNumber, 1);
+                    _timeToEnd = 60.0f;
+                    break;
+                }
+            }
+        }
+    }
+
     public void SpawnEveryThing()
     {
         IAs = new List<GameObject>();
-        players = new List<GameObject>();
+        players = new List<Player>();
 
         mobs = new List<IA>();
+
+        _timeToEnd = 60.0f;
+        _hasShown = false;
+        _timeToShow = Random.Range(10.0f, 30.0f);
 
         for (int i = 0; i < nbMobs; i++)
         {
@@ -98,7 +135,7 @@ public class GameManager : MonoBehaviour
                 theRole = Agent.role.Sherif;
             }
 
-            players.Add(go);
+            players.Add(go.GetComponent<Player>());
 
             if (i == 0)
             {
@@ -148,7 +185,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void SetDeath(int id)
+    public void SetDeath(int id, Agent.role theRole)
     {
         if(id == 0)
         {
@@ -162,17 +199,46 @@ public class GameManager : MonoBehaviour
         {
             j2role.GetComponent<Image>().sprite = dead;
         }
+
+        if(theRole == Agent.role.Killer)
+        {
+            Reset();
+        }
+        else
+        {
+            bool sherifAlive = true;
+            bool InnocentAlive = true;
+
+            foreach (Player go in players)
+            {
+                if (go.GetRole() == Agent.role.Innocent && !go.IsAlive())
+                {
+                    InnocentAlive = false;
+                }
+                else if (go.GetRole() == Agent.role.Sherif && !go.IsAlive())
+                {
+                    sherifAlive = false;
+                }
+            }
+
+            if (!sherifAlive && !InnocentAlive)
+            {
+                Reset();
+            }
+        }
     }
 
     public void Reset()
     {
-        foreach(GameObject go in players)
+        if (scoreJ0 == scoreMax || scoreJ1 == scoreMax || scoreJ2 == scoreMax) return;
+
+        foreach(Player go in players)
         {
-            Destroy(go);
+            Destroy(go.gameObject);
         }
         foreach (GameObject go in IAs)
         {
-            Destroy(go);
+            Destroy(go.gameObject);
         }
 
         SpawnEveryThing();

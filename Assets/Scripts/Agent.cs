@@ -33,6 +33,6 @@ public class Agent : MonoBehaviour
 
     public virtual void InitRole()
     {
-
+        // to override
     }
 }

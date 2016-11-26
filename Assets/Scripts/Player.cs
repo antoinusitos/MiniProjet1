@@ -10,12 +10,27 @@ public class Player : Agent
     private float _cooldownFire = 1.0f;
     private float _distanceFire = 10.0f;
 
+    public Sprite showingSprite;
+    public Sprite NormalSprite;
+
     public override void InitRole()
     {
         if (_role == role.Killer || _role == role.Sherif)
         {
             _hasWeapon = true;
         }
+    }
+
+    public void ShowPlayer()
+    {
+        GetComponent<SpriteRenderer>().sprite = showingSprite;
+        StartCoroutine(HidePlayer());
+    }
+
+    IEnumerator HidePlayer()
+    {
+        yield return new WaitForSeconds(0.1f);
+        GetComponent<SpriteRenderer>().sprite = NormalSprite;
     }
 
     void Update()
@@ -89,11 +104,21 @@ public class Player : Agent
         }
     }
 
+    public role GetRole()
+    {
+        return _role;
+    }
+
+    public bool IsAlive()
+    {
+        return _isAlive;
+    }
+
     void TakeDamage(role senderRole, int idSender)
     {
         _isAlive = false;
         GetComponent<SpriteRenderer>().sprite = deadTexture;
-        _gm.SetDeath(_playerNumber);
+
         if(_role == role.Innocent)
         {
             if(senderRole == role.Killer)
@@ -125,5 +150,7 @@ public class Player : Agent
                 _gm.Reset();
             }
         }
+
+        _gm.SetDeath(_playerNumber, _role);
     }
 }
