@@ -13,6 +13,13 @@ public class Player : Agent
     public Sprite showingSprite;
     public Sprite NormalSprite;
 
+    Vector2 _limits;
+
+    void Awake()
+    {
+        _limits = FindObjectOfType<GameManager>().levelLimit;
+    }
+
     public override void InitRole()
     {
         if (_role == role.Killer || _role == role.Sherif)
@@ -68,7 +75,15 @@ public class Player : Agent
         }
 
         if (move)
-            transform.position += new Vector3(_direction.x * _speed * Time.deltaTime, _direction.y * _speed * Time.deltaTime);
+        {
+            Vector3 newDest = transform.position + new Vector3(_direction.x * _speed * Time.deltaTime, _direction.y * _speed * Time.deltaTime);
+
+            if (!(newDest.x > _limits.x || newDest.x < -_limits.x
+            || newDest.y < -_limits.y || newDest.y > _limits.y))
+            {
+                transform.position += new Vector3(_direction.x * _speed * Time.deltaTime, _direction.y * _speed * Time.deltaTime);
+            }
+        }
 
         // pour le sherif et le killer
         if (_hasWeapon)
